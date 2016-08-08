@@ -23,6 +23,7 @@ requires 'Catalyst::View::TT' => '0.44';
 requires 'DBD::Pg' => '3.5.3';
 requires 'DBIx::Class' => '0.082840';
 requires 'Catalyst::Model::DBIC::Schema' => '0.65';
+requires 'DBIx::Class::Schema::Loader' => '0.07045';
 
 test_requires 'Test::More' => '0.88';
 catalyst;
