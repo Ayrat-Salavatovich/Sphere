@@ -20,6 +20,9 @@ requires 'Config::General'; # This should reflect the config file format you've 
                  # See Catalyst::Plugin::ConfigLoader for supported formats
 
 requires 'Catalyst::View::TT' => '0.44';
+requires 'DBD::Pg' => '3.5.3';
+requires 'DBIx::Class' => '0.082840';
+requires 'Catalyst::Model::DBIC::Schema' => '0.65';
 
 test_requires 'Test::More' => '0.88';
 catalyst;
