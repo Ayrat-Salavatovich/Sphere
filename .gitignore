@@ -55,3 +55,23 @@ flycheck_*.el
 /server/
 # projectiles files
 .projectile
+
+# -*-Catalyst-*- #
+
+.*
+!.gitignore
+/Makefile*
+!Makefile.PL
+/MYMETA.*
+/META.*
+/blib/
+/build/
+/inc/
+/pm_to_blib
+/MANIFEST*
+!MANIFEST.SKIP
+/Debian*
+#README
+/Catalyst-Runtime-*
+*.bs
+/t/tmp
