@@ -44,7 +44,7 @@ Standard 404 error page
 sub default :Path {
     my ( $self, $c ) = @_;
     
-    $c->detach('/not_found');
+    $c->detach('not_found');
 }
 
 =head2 not_found

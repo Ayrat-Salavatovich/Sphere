@@ -32,7 +32,7 @@
         <a href="[% Catalyst.uri_for(Catalyst.controller('Statuses').action_for('edit'), [status.pk]) | html %]">Edit</a>
       </td>
       <td>
-        <a href="[% Catalyst.uri_for(Catalyst.controller('Statuses').action_for('show'), [status.pk]) | html %]">Show</a>
+        <a href="[% Catalyst.uri_for(Catalyst.controller('Statuses').action_for('view'), [status.pk]) | html %]">View</a>
       </td>
     </tr>
     [% END -%]

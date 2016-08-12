@@ -1,4 +1,4 @@
-package Sphere::Controller::Statuses;
+package Sphere::Controller::Roles;
 use Moose;
 use namespace::autoclean;
 
@@ -6,7 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
 
-Sphere::Controller::Statuses - Catalyst Controller
+Sphere::Controller::Roles - Catalyst Controller
 
 =head1 DESCRIPTION
 
@@ -20,15 +20,16 @@ Catalyst Controller.
 =head2 index
 
 =cut
-    
+
 sub index : Path Args(0) {
     my ( $self, $c ) = @_;
     $c->detach('list');
 }
 
-sub base : Chained('/') PathPart('statuses') CaptureArgs(0) {
+sub base : Chained('/') PathPart('roles') CaptureArgs(0) {
     my ( $self, $c ) = @_;
-    
+
+    $c->stash(roles => $c->model('SphereAppDB::Role'));
     $c->stash(statuses => $c->model('SphereAppDB::Status'));
 }
 
@@ -38,11 +39,11 @@ sub object : Chained('base') PathPart('') CaptureArgs(1) {
     if ($id =~ /\D/) { # Misuse of URL, ID does not contain only digits.
 	$c->detach('/not_found', []);
     } else {
-	my $status = $c->stash->{statuses}->find({ pk => int($id), key => 'primary' });
-	if (not defined $status) { # Could not find a status with ID.
+	my $role = $c->stash->{roles}->find({ pk => int($id), key => 'primary' });
+	if (not defined $role) { # Could not find a status with ID.
 	    $c->detach('/not_found', []);
 	} else {
-	    $c->stash->{status} = $status;
+	    $c->stash->{role} = $role;
 	}
     }
 }
@@ -54,11 +55,15 @@ sub list : Chained('base') PathPart('list') Args(0) {
 Sphere->register_profile(
     method  => 'add',
     profile => {
-	status_name => {
+	role_name => {
 	    required => 1,
 	    allow    => qr/^\w+$/,
 	},
-	status_description => {
+	role_status => {
+	    required => 1,
+	    allow    => qr/^\d+$/,
+	},
+	role_description => {
 	    required => 0,
 	},
     },
@@ -70,16 +75,22 @@ sub add : Chained('base') PathPart('add') Args(0) {
     if(lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
 	if (not $c->check_params) {
-	    $c->stash->{error_msg} = "No name.";
-	} elsif ($c->stash->{statuses}->count_literal("name LIKE ?", $params->{status_name}."%") > 0) {
-	    $c->stash->{error_msg} = "Status already exists.";
+	    $c->stash->{error_msg} = "Parameters is incorrect.";
+	} elsif ($c->stash->{roles}->count_literal("name LIKE ?", $params->{role_name}."%") > 0) {
+	    $c->stash->{error_msg} = "Role already exists.";
 	} else {
-	    # Create the status
-	    my $new_status = $c->stash->{statuses}->create({
-		name => $params->{status_name},
-		description => $params->{status_description} || '',
-            });
-	    $c->response->redirect( $c->uri_for( $self->action_for('list') ) );
+	    my $status = $c->stash->{statuses}->find({ pk => int($params->{role_status}) });
+	    if ($status) { 
+		# Create the role
+		my $new_status = $c->stash->{roles}->create({
+		    name => $params->{role_name},
+		    status => $status,
+		    description => $params->{role_description} || '',
+		});
+		$c->response->redirect( $c->uri_for( $self->action_for('list') ) );
+	    } else {
+		$c->stash->{error_msg} = "Status does not exist.";
+	    }
 	}
     }
 }
@@ -87,19 +98,23 @@ sub add : Chained('base') PathPart('add') Args(0) {
 sub remove : Chained('object') PathPart('remove') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $status = $c->stash->{status};
-    $status->delete;
+    my $role = $c->stash->{role};
+    $role->delete;
     $c->res->redirect( $c->req->referer() );
 }
 
 Sphere->register_profile(
     method  => 'edit',
     profile => {
-	status_name => {
+	role_name => {
 	    required => 1,
 	    allow    => qr/^\w+$/,
 	},
-	status_description => {
+	role_status => {
+	    required => 1,
+	    allow    => qr/^\d+$/,
+	},
+	role_description => {
 	    required => 0,
 	},
     },
@@ -109,18 +124,23 @@ sub edit : Chained('object') PathPart('edit') Args(0) {
     my ( $self, $c ) = @_;
     
     if (lc $c->req->method eq 'post') {
-	my $params = $c->req->params;
-	my $status = $c->stash->{status};
-	
 	if (not $c->check_params) {
-	    $c->stash->{error_msg} = "No name.";
+	    $c->stash->{error_msg} = "Parameters is incorrect.";
 	} else {
-	    # Update status's name and/or description
-	    $status->update({
-		name => $params->{status_name},
-		description => $params->{status_description},
-      	    });
-	    $c->response->redirect( $c->uri_for( $self->action_for('list') ) );
+	    my $params = $c->req->params;
+	    my $role = $c->stash->{role};
+    
+	    my $status = $c->stash->{statuses}->find({ pk => int($params->{role_status}) });
+	    if ($status) { 
+		# Update role's name and/or description
+		$role->update({
+		    name => $params->{role_name},
+		    description => $params->{role_description},
+                });
+		$c->response->redirect( $c->uri_for( $self->action_for('list') ) );
+	    } else {
+		$c->stash->{error_msg} = "Status does not exist.";
+	    }
 	}
     }
 }
