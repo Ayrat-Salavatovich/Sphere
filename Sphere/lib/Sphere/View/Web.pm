@@ -6,7 +6,13 @@ extends 'Catalyst::View::TT';
 
 __PACKAGE__->config(
     TEMPLATE_EXTENSION => '.tt',
-    render_die => 1,
+    CATALYST_VAR       => 'Catalyst',
+    TIMER              => 0,
+    ENCODING           => 'utf-8',
+    PRE_PROCESS        => 'config/main.tt',
+    WRAPPER            => 'site/wrapper.tt', # Add a wrapper template
+    ERROR              => 'error.tt',
+    render_die         => 1,
 );
 
 =head1 NAME

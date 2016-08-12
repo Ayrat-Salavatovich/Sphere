@@ -1,0 +1,5 @@
+<!-- BEGIN site/footer -->
+<footer>
+     [% site.footer_msg %]
+</footer>
+<!-- END site/footer -->

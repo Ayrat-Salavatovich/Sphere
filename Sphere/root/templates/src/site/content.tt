@@ -1,0 +1,7 @@
+<!-- BEGIN site/content -->
+<div id="content">
+     <span class="message">[% status_msg %]</span>
+     <span class="error">[% error_msg %]</span>
+     [% content %]
+</div>
+<!-- END site/content -->      

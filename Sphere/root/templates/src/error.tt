@@ -1,0 +1,8 @@
+<h1>Error</h1>
+
+<code>Status: [% c.res.status %]</code>
+<ul>
+    [% FOREACH e IN error %]
+       <li><code>[% e %]</code></li>
+    [% END %]
+</ul>

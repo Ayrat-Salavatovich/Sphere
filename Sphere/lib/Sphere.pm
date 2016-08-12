@@ -40,6 +40,17 @@ __PACKAGE__->config(
     # Disable deprecated behavior needed by old applications
     disable_component_resolution_regex_fallback => 1,
     enable_catalyst_header => 1, # Send X-Catalyst header
+    using_frontend_proxy => 1, # Set the right headers for nginx
+);
+
+# Set the location for TT files
+__PACKAGE__->config(
+    'View::Web' => {
+	INCLUDE_PATH => [
+	    __PACKAGE__->path_to( 'root', 'templates', 'lib' ),
+            __PACKAGE__->path_to( 'root', 'templates', 'src' ),
+	],
+    },
 );
 
 # Start the application

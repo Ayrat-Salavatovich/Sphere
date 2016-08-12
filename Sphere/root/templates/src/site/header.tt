@@ -1,0 +1,9 @@
+<!-- BEGIN site/header -->
+<header>
+     <div class="spacer"></div>
+     <div class='row'>
+          <span class="title">[% template.title or site.title %]</span>
+     </div>
+     <div class="spacer"></div>
+</header>
+<!-- END site/header -->

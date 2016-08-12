@@ -43,8 +43,23 @@ Standard 404 error page
 
 sub default :Path {
     my ( $self, $c ) = @_;
-    $c->response->body( 'Page not found' );
+    
+    $c->detach('/not_found');
+}
+
+=head2 not_found
+
+This is the private not_found method that sets the response code to 404 and
+instructs L<Catalyst::Action::RenderView> to use the C<http_status_codes/404.tt> 
+template
+
+=cut
+
+sub not_found :Private {
+    my ( $self, $c ) = @_;
+    
     $c->response->status(404);
+    $c->stash->{template} = 'http_status_codes/404.tt';
 }
 
 =head2 end

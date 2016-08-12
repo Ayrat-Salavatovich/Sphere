@@ -1,0 +1,12 @@
+[% META title = 'Status' -%]
+
+<h1>Status</h1>
+
+<p>
+<label>ID:</label> [% status.pk %]<br>
+<label>Name:</label> [% status.name %]<br>
+<label>Description:</label> [% status.description %]<br>
+</p>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Statuses').action_for('edit'), [status.pk]) | html %]">Edit</a><br>
+<a href="[% Catalyst.uri_for(Catalyst.controller('Statuses').action_for('list')) | html %]">Statuses...</a></p>

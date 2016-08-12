@@ -1,0 +1,5 @@
+[% PROCESS site/header.tt %]
+
+[% PROCESS site/content.tt %]
+
+[% PROCESS site/footer.tt %]
