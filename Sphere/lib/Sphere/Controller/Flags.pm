@@ -1,4 +1,4 @@
-package Sphere::Controller::Roles;
+package Sphere::Controller::Flags;
 use Moose;
 use namespace::autoclean;
 
@@ -6,7 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 =head1 NAME
 
-Sphere::Controller::Roles - Catalyst Controller
+Sphere::Controller::Flags - Catalyst Controller
 
 =head1 DESCRIPTION
 
@@ -23,15 +23,14 @@ Catalyst Controller.
 
 sub index : Path Args(0) {
     my ( $self, $c ) = @_;
-    
     $c->detach('list');
 }
 
-sub base : Chained('/') PathPart('roles') CaptureArgs(0) {
+sub base : Chained('/') PathPart('flags') CaptureArgs(0) {
     my ( $self, $c ) = @_;
 
-    $c->stash(roles => $c->model('SphereAppDB::Role'));
-    $c->stash(statuses => $c->model('SphereAppDB::Status'));
+    $c->stash( flags => $c->model('SphereAppDB::Flag') );
+    $c->stash( statuses => $c->model('SphereAppDB::Status') );
 }
 
 sub object : Chained('base') PathPart('') CaptureArgs(1) {
@@ -40,40 +39,39 @@ sub object : Chained('base') PathPart('') CaptureArgs(1) {
     if ($id =~ /\D/) { # Misuse of URL, ID does not contain only digits.
 	$c->detach('/not_found', []);
     } else {
-	my $role = $c->stash->{roles}->find({ pk => int($id), key => 'primary' });
-	if (not defined $role) { # Could not find a role with ID.
+	my $flag = $c->stash->{flags}->find({ pk => int($id), key => 'primary' });
+	if (not defined $flag) { # Could not find a flag with ID.
 	    $c->detach('/not_found', []);
 	} else {
-	    $c->stash->{role} = $role;
+	    $c->stash->{flag} = $flag;
 	}
     }
 }
 
 sub list : Chained('base') PathPart('list') Args(0) {
-    my ( $self, $c ) = @_;
-    
-    my $roles = $c->stash->{roles}->search(
+    my ( $self, $c ) = @_;    
+        my $flags = $c->stash->{flags}->search(
 	{},
 	{
 	    columns  => [qw/pk name description status_fk/],
 	    order_by => 'name',
 	}
     );
-    $c->stash(roles => $roles);
+    $c->stash(flags => $flags);
 }
 
 Sphere->register_profile(
     method  => 'add',
     profile => {
-	role_name => {
+	flag_name => {
 	    required => 1,
 	    allow    => qr/^\w+$/,
 	},
-	role_status => {
+	flag_status => {
 	    required => 1,
 	    allow    => qr/^\d+$/,
 	},
-	role_description => {
+	flag_description => {
 	    required => 0,
 	},
     },
@@ -82,12 +80,12 @@ Sphere->register_profile(
 sub add : Chained('base') PathPart('add') Args(0) {
     my ( $self, $c ) = @_;
     
-    if(lc $c->req->method eq 'post') {
+    if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
 	if (not $c->check_params) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";
-	} elsif ($c->stash->{roles}->count_literal("name LIKE ?", $params->{role_name}."%") > 0) {
-	    $c->stash->{error_msg} = "Role already exists.";
+	} elsif ($c->stash->{flags}->count_literal("name LIKE ?", $params->{flag_name}."%") > 0) {
+	    $c->stash->{error_msg} = "Flag already exists.";
 	} else {
 	    $c->forward('save');
 	}
@@ -99,23 +97,23 @@ sub add : Chained('base') PathPart('add') Args(0) {
 sub remove : Chained('object') PathPart('remove') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $role = $c->stash->{role};
-    $role->delete;
+    my $flag = $c->stash->{flag};
+    $flag->delete;
     $c->res->redirect( $c->req->referer() );
 }
 
 Sphere->register_profile(
     method  => 'edit',
     profile => {
-	role_name => {
+	flag_name => {
 	    required => 1,
 	    allow    => qr/^\w+$/,
 	},
-	role_status => {
+	flag_status => {
 	    required => 1,
 	    allow    => qr/^\d+$/,
 	},
-	role_description => {
+	flag_description => {
 	    required => 0,
 	},
     },
@@ -143,20 +141,20 @@ sub save : Private {
     my ($self, $c) = @_;
     
     my $params = $c->req->params;
-    my $status = $c->stash->{statuses}->find({ pk => int($params->{role_status}) });
+    my $status = $c->stash->{statuses}->find({ pk => int($params->{flag_status}) });
     if ($status) {
-	if ($c->stash->{role}) {
-	    # Update the role
-	    $c->stash->{role}->update({
-		name => $params->{role_name},
-		description => $params->{role_description},
+	if ($c->stash->{flag}) {
+	    # Update the flag
+	    $c->stash->{flag}->update({
+		name => $params->{flag_name},
+		description => $params->{flag_description},
 		status => $status,
 	    });
 	} else {
-	    # Create the role
-	    $c->stash->{roles}->create({
-		name => $params->{role_name},
-		description => $params->{role_description} || '',
+	    # Create the flag
+	    $c->stash->{flags}->create({
+		name => $params->{flag_name},
+		description => $params->{flag_description} || '',
 		status => $status,
 	    });
 	}
@@ -169,10 +167,10 @@ sub save : Private {
 sub form : Private {
     my ( $self, $c ) = @_;
     
-    if ($c->stash->{role}) {
-	$c->stash( template => 'roles/edit.tt' );
+    if ($c->stash->{flag}) {
+	$c->stash( template => 'flags/edit.tt' );
     } else {
-	$c->stash( template => 'roles/add.tt' );
+	$c->stash( template => 'flags/add.tt' );
     }
 }
 

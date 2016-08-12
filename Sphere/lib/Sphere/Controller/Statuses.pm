@@ -23,6 +23,7 @@ Catalyst Controller.
     
 sub index : Path Args(0) {
     my ( $self, $c ) = @_;
+    
     $c->detach('list');
 }
 
@@ -48,7 +49,16 @@ sub object : Chained('base') PathPart('') CaptureArgs(1) {
 }
 
 sub list : Chained('base') PathPart('list') Args(0) {
-    my ( $self, $c ) = @_;    
+    my ( $self, $c ) = @_;
+    
+    my $statuses = $c->stash->{statuses}->search(
+	{},
+	{
+	    columns  => [qw/pk name description/],
+	    order_by => 'name',
+	}
+    );
+    $c->stash(statuses => $statuses);
 }
 
 Sphere->register_profile(
@@ -74,13 +84,10 @@ sub add : Chained('base') PathPart('add') Args(0) {
 	} elsif ($c->stash->{statuses}->count_literal("name LIKE ?", $params->{status_name}."%") > 0) {
 	    $c->stash->{error_msg} = "Status already exists.";
 	} else {
-	    # Create the status
-	    my $new_status = $c->stash->{statuses}->create({
-		name => $params->{status_name},
-		description => $params->{status_description} || '',
-            });
-	    $c->response->redirect( $c->uri_for( $self->action_for('list') ) );
+	    $c->forward('save');
 	}
+    } else {
+	$c->forward('form');
     }
 }
 
@@ -115,18 +122,45 @@ sub edit : Chained('object') PathPart('edit') Args(0) {
 	if (not $c->check_params) {
 	    $c->stash->{error_msg} = "No name.";
 	} else {
-	    # Update status's name and/or description
-	    $status->update({
-		name => $params->{status_name},
-		description => $params->{status_description},
-      	    });
-	    $c->response->redirect( $c->uri_for( $self->action_for('list') ) );
+	    $c->forward('save');
 	}
+    } else {
+	$c->forward('form');
     }
 }
 
 sub view : Chained('object') PathPart('view') Args(0) {
     my ( $self, $c ) = @_;
+}
+
+sub save : Private {
+    my ($self, $c) = @_;
+    
+    my $params = $c->req->params;
+    if ($c->stash->{status}) {
+	# Update the status
+	$c->stash->{status}->update({
+	    name => $params->{status_name},
+	    description => $params->{status_description},
+	});
+    } else {
+	# Create the status
+	$c->stash->{statuses}->create({
+	    name => $params->{status_name},
+	    description => $params->{status_description} || '',
+	});
+    }
+    $c->response->redirect( $c->uri_for( $self->action_for('list') ) );
+}
+
+sub form : Private {
+    my ( $self, $c ) = @_;
+    
+    if ($c->stash->{status}) {
+	$c->stash( template => 'statuses/edit.tt' );
+    } else {
+	$c->stash( template => 'statuses/add.tt' );
+    }
 }
 
 =encoding utf8
