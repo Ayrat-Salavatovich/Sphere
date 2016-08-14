@@ -4,6 +4,8 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+use Sphere::Form::Flag;
+
 =head1 NAME
 
 Sphere::Controller::Flags - Catalyst Controller
@@ -23,13 +25,14 @@ Catalyst Controller.
 
 sub index : Path Args(0) {
     my ( $self, $c ) = @_;
+    
     $c->detach('list');
 }
 
 sub base : Chained('/') PathPart('flags') CaptureArgs(0) {
     my ( $self, $c ) = @_;
 
-    $c->stash( flags => $c->model('SphereAppDB::Flag') );
+    $c->stash( flags    => $c->model('SphereAppDB::Flag') );
     $c->stash( statuses => $c->model('SphereAppDB::Status') );
 }
 
@@ -41,6 +44,7 @@ sub object : Chained('base') PathPart('') CaptureArgs(1) {
     } else {
 	my $flag = $c->stash->{flags}->find({ pk => int($id), key => 'primary' });
 	if (not defined $flag) { # Could not find a flag with ID.
+	    $c->stash->{error_msg} = "Flag not found.";
 	    $c->detach('/not_found', []);
 	} else {
 	    $c->stash->{flag} = $flag;
@@ -49,8 +53,9 @@ sub object : Chained('base') PathPart('') CaptureArgs(1) {
 }
 
 sub list : Chained('base') PathPart('list') Args(0) {
-    my ( $self, $c ) = @_;    
-        my $flags = $c->stash->{flags}->search(
+    my ( $self, $c ) = @_;
+    
+    my $flags = $c->stash->{flags}->search(
 	{},
 	{
 	    columns  => [qw/pk name description status_fk/],
@@ -60,29 +65,14 @@ sub list : Chained('base') PathPart('list') Args(0) {
     $c->stash(flags => $flags);
 }
 
-Sphere->register_profile(
-    method  => 'add',
-    profile => {
-	flag_name => {
-	    required => 1,
-	    allow    => qr/^\w+$/,
-	},
-	flag_status => {
-	    required => 1,
-	    allow    => qr/^\d+$/,
-	},
-	flag_description => {
-	    required => 0,
-	},
-    },
-);
-
 sub add : Chained('base') PathPart('add') Args(0) {
     my ( $self, $c ) = @_;
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	if (not $c->check_params) {
+	my $form = Sphere::Form::Flag->new;
+	my $result = $form->run( params => $params );
+	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";
 	} elsif ($c->stash->{flags}->count_literal("name LIKE ?", $params->{flag_name}."%") > 0) {
 	    $c->stash->{error_msg} = "Flag already exists.";
@@ -102,28 +92,14 @@ sub remove : Chained('object') PathPart('remove') Args(0) {
     $c->res->redirect( $c->req->referer() );
 }
 
-Sphere->register_profile(
-    method  => 'edit',
-    profile => {
-	flag_name => {
-	    required => 1,
-	    allow    => qr/^\w+$/,
-	},
-	flag_status => {
-	    required => 1,
-	    allow    => qr/^\d+$/,
-	},
-	flag_description => {
-	    required => 0,
-	},
-    },
-);
-
 sub edit : Chained('object') PathPart('edit') Args(0) {
     my ( $self, $c ) = @_;
     
     if (lc $c->req->method eq 'post') {
-	if (not $c->check_params) {
+	my $params = $c->req->params;
+	my $form = Sphere::Form::Flag->new;
+	my $result = $form->run( params => $params );
+	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";
 	} else {
 	    $c->forward('save');
@@ -160,7 +136,7 @@ sub save : Private {
 	}
 	$c->response->redirect( $c->uri_for( $self->action_for('list') ) );
     } else {
-	$c->stash->{error_msg} = "Status does not exist.";
+	$c->stash->{error_msg} = "Status does not exist or you do not have permission.";
     }
 }
 

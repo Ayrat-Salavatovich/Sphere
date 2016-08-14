@@ -146,7 +146,7 @@ Related object: L<Sphere::Schema::SphereAppDB::Result::Status>
 =cut
 
 __PACKAGE__->belongs_to(
-  "status_fk",
+  "status",
   "Sphere::Schema::SphereAppDB::Result::Status",
   { pk => "status_fk" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },

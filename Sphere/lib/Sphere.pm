@@ -20,7 +20,6 @@ use Catalyst qw/
     -Debug
     ConfigLoader
     Static::Simple
-    Params::Profile
 /;
 
 extends 'Catalyst';

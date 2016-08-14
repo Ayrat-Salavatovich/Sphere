@@ -1,0 +1,24 @@
+[% META title = 'Add a doctor' -%]
+
+<h1>Add a doctor</h1>
+
+<form action="[% Catalyst.uri_for(Catalyst.controller('Doctors').action_for('add')) | html %]" method="post">
+      <p><label for="doctor_first_name">First name</label><input type="text" name="doctor_first_name" id="doctor_first_name" /><br>
+      <label for="doctor_middle_name">Middle name</label><input type="text" name="doctor_middle_name" id="doctor_middle_name" /><br>
+      <label for="doctor_last_name">Last name</label><input type="text" name="doctor_last_name" id="doctor_last_name" /><br>
+      <label for="doctor_post">Post</label><select name="doctor_post" id="doctor_post">
+      [% WHILE (post = posts.next) %]
+      	 <option value="[% post.pk %]">[% post.name %]</option>
+      [% END %]
+      </select><br>
+      <label for="doctor_cabinet">Cabinet</label><input type="text" name="doctor_cabinet" id="doctor_cabinet" /><br>
+      <label for="doctor_description">Description<label><input type="text" name="doctor_description" id="doctor_description" /><br>
+      <label for="doctor_status">Status</label><select name="doctor_status" id="doctor_status">
+      [% WHILE (status = statuses.next) %]
+      	 <option value="[% status.pk %]">[% status.name %]</option>
+      [% END %]
+      </select><br>
+      <input type="submit" value="Create" /></p>
+</form>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Doctors').action_for('list')) | html %]">Doctors...</a></p>

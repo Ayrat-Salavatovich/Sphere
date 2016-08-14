@@ -1,0 +1,16 @@
+[% META title = 'Add a post' -%]
+
+<h1>Add a post</h1>
+
+<form action="[% Catalyst.uri_for(Catalyst.controller('Posts').action_for('add')) | html %]" method="post">
+      <p><label for="post_name">Name</label><input type="text" name="post_name" id="post_name" /><br>
+      <label for="post_description">Description<label><input type="text" name="post_description" id="post_description" /><br>
+      <label for="post_status">Status</label><select name="post_status" id="post_status">
+      [% WHILE (status = statuses.next) %]
+      	 <option value="[% status.pk %]">[% status.name %]</option>
+      [% END %]
+      </select><br>
+      <input type="submit" value="Create" /></p>
+</form>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Posts').action_for('list')) | html %]">Posts...</a></p>

@@ -1,14 +1,14 @@
-package Sphere::Controller::Roles;
+package Sphere::Controller::Doctors;
 use Moose;
 use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
-use Sphere::Form::Role;
+use Sphere::Form::Doctor;
 
 =head1 NAME
 
-Sphere::Controller::Roles - Catalyst Controller
+Sphere::Controller::Doctors - Catalyst Controller
 
 =head1 DESCRIPTION
 
@@ -29,10 +29,11 @@ sub index : Path Args(0) {
     $c->detach('list');
 }
 
-sub base : Chained('/') PathPart('roles') CaptureArgs(0) {
+sub base : Chained('/') PathPart('doctors') CaptureArgs(0) {
     my ( $self, $c ) = @_;
 
-    $c->stash( roles    => $c->model('SphereAppDB::Role') );
+    $c->stash( doctors  => $c->model('SphereAppDB::Doctor') );
+    $c->stash( posts    => $c->model('SphereAppDB::Post') );
     $c->stash( statuses => $c->model('SphereAppDB::Status') );
 }
 
@@ -42,12 +43,12 @@ sub object : Chained('base') PathPart('') CaptureArgs(1) {
     if ($id =~ /\D/) { # Misuse of URL, ID does not contain only digits.
 	$c->detach('/not_found', []);
     } else {
-	my $role = $c->stash->{roles}->find({ pk => int($id), key => 'primary' });
-	if (not defined $role) { # Could not find a role with ID.
-	    $c->stash->{error_msg} = "Role not found.";
+	my $doctor = $c->stash->{doctors}->find({ pk => int($id), key => 'primary' });
+	if (not defined $doctor) { # Could not find a doctor with ID.
+	    $c->stash->{error_msg} = "Doctor not found.";
 	    $c->detach('/not_found', []);
 	} else {
-	    $c->stash->{role} = $role;
+	    $c->stash->{doctor} = $doctor;
 	}
     }
 }
@@ -55,14 +56,14 @@ sub object : Chained('base') PathPart('') CaptureArgs(1) {
 sub list : Chained('base') PathPart('list') Args(0) {
     my ( $self, $c ) = @_;
     
-    my $roles = $c->stash->{roles}->search(
+    my $doctors = $c->stash->{doctors}->search(
 	{},
 	{
-	    columns  => [qw/pk name description status_fk/],
-	    order_by => 'name',
+	    columns  => [qw/pk first_name middle_name last_name post_fk cabinet description status_fk/],
+	    order_by => [qw/post_fk middle_name/],
 	}
     );
-    $c->stash(roles => $roles);
+    $c->stash(doctors => $doctors);
 }
 
 sub add : Chained('base') PathPart('add') Args(0) {
@@ -70,12 +71,10 @@ sub add : Chained('base') PathPart('add') Args(0) {
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	my $form = Sphere::Form::Role->new;
+	my $form = Sphere::Form::Doctor->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";
-	} elsif ($c->stash->{roles}->count_literal("name LIKE ?", $params->{role_name}."%") > 0) {
-	    $c->stash->{error_msg} = "Role already exists.";
 	} else {
 	    $c->forward('save');
 	}
@@ -87,8 +86,8 @@ sub add : Chained('base') PathPart('add') Args(0) {
 sub remove : Chained('object') PathPart('remove') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $role = $c->stash->{role};
-    $role->delete;
+    my $doctor = $c->stash->{doctor};
+    $doctor->delete;
     $c->res->redirect( $c->req->referer() );
 }
 
@@ -97,7 +96,7 @@ sub edit : Chained('object') PathPart('edit') Args(0) {
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	my $form = Sphere::Form::Role->new;
+	my $form = Sphere::Form::Doctor->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";
@@ -117,36 +116,45 @@ sub save : Private {
     my ($self, $c) = @_;
     
     my $params = $c->req->params;
-    my $status = $c->stash->{statuses}->find({ pk => int($params->{role_status}) });
-    if ($status) {
-	if ($c->stash->{role}) {
-	    # Update the role
-	    $c->stash->{role}->update({
-		name => $params->{role_name},
-		description => $params->{role_description},
+    my $post = $c->stash->{posts}->find({ pk => int($params->{doctor_post}) });
+    my $status = $c->stash->{statuses}->find({ pk => int($params->{doctor_status}) });
+    if ($post and $status) {
+	if ($c->stash->{doctor}) {
+	    # Update the doctor
+	    $c->stash->{doctor}->update({
+		first_name => $params->{doctor_first_name},
+		middle_name => $params->{doctor_middle_name},		
+		last_name => $params->{doctor_last_name},
+		post => $post,
+		cabinet => $params->{doctor_cabinet},
+		description => $params->{doctor_description},
 		status => $status,
 	    });
 	} else {
-	    # Create the role
-	    $c->stash->{roles}->create({
-		name => $params->{role_name},
-		description => $params->{role_description} || '',
+	    # Create the doctor
+	    $c->stash->{doctors}->create({
+		first_name => $params->{doctor_first_name},
+		middle_name => $params->{doctor_middle_name},		
+		last_name => $params->{doctor_last_name} || '',
+		post => $post,
+		cabinet => $params->{doctor_cabinet},
+		description => $params->{doctor_description} || '',
 		status => $status,
 	    });
 	}
 	$c->response->redirect( $c->uri_for( $self->action_for('list') ) );
     } else {
-	$c->stash->{error_msg} = "Status does not exist or you do not have permission.";
+	$c->stash->{error_msg} = "Fields 'post' or 'status' do not exist or you do not have permission.";
     }
 }
 
 sub form : Private {
     my ( $self, $c ) = @_;
     
-    if ($c->stash->{role}) {
-	$c->stash( template => 'roles/edit.tt' );
+    if ($c->stash->{doctor}) {
+	$c->stash( template => 'doctors/edit.tt' );
     } else {
-	$c->stash( template => 'roles/add.tt' );
+	$c->stash( template => 'doctors/add.tt' );
     }
 }
 

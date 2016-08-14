@@ -1,0 +1,16 @@
+[% META title = 'Edit a post' -%]
+
+<h1>Edit a post</h1>
+
+<form action="[% Catalyst.uri_for( Catalyst.controller('Posts').action_for('edit'), [ post.pk ]) | html %]" method="post">
+      <p><label for="post_name">Name</label><input type="text" name="post_name" id="post_name" value="[% post.name %]"/><br>
+      <label for="post_description">Description<label><input type="text" name="post_description" id="post_description" value="[% post.description %]"/><br>
+      <label for="post_status">Status</label><select name="post_status" id="post_status">
+      [% WHILE (status = statuses.next) %]
+      	 <option value="[% status.pk %]" [%- IF post.status.pk == status.pk %] selected="selected" [% END %]>[% status.name %]</option>
+      [% END %]
+      </select><br>
+      <input type="submit" value="Edit" /></p>
+</form>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Posts').action_for('list')) | html %]">Posts...</a></p>

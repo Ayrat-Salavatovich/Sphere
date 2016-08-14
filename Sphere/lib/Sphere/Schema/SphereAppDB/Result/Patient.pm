@@ -131,7 +131,7 @@ Related object: L<Sphere::Schema::SphereAppDB::Result::Account>
 =cut
 
 __PACKAGE__->belongs_to(
-  "account_fk",
+  "account",
   "Sphere::Schema::SphereAppDB::Result::Account",
   { pk => "account_fk" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
