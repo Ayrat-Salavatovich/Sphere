@@ -27,6 +27,7 @@ requires 'DBIx::Class::Schema::Loader' => '0.07045';
 requires 'MooseX::NonMoose' => '0.26';
 requires 'HTML::FormHandler' => '0.40066';
 requires 'HTML::FormHandler::Moose' => '0.40066';
+requires 'LWP::UserAgent' => '6.15';
 
 test_requires 'Test::More' => '0.88';
 catalyst;
