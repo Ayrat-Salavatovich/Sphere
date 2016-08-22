@@ -1,4 +1,5 @@
 [% META title = 'Flags' -%]
+[% flags = entries %]
 
 <h1>List of flags</h1>
 

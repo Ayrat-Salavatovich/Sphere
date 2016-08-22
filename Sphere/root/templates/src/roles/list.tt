@@ -1,4 +1,5 @@
 [% META title = 'Roles' -%]
+[% roles = entries %]
 
 <h1>List of roles</h1>
 

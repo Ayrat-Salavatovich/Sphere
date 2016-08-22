@@ -2,7 +2,14 @@ package Sphere::Controller::Statuses;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller'; }
+BEGIN { extends 'Sphere::Controller::ModelBase'; }
+
+__PACKAGE__->config(model_name => 'SphereAppDB::Status',
+		    model_search_attrs => {
+			columns  => [qw/pk name description/],
+		        order_by => 'name',
+		    },
+);
 
 use Sphere::Form::Status;
 
@@ -35,35 +42,6 @@ sub base : Chained('/') PathPart('statuses') CaptureArgs(0) {
     $c->stash( statuses => $c->model('SphereAppDB::Status') );
 }
 
-sub object : Chained('base') PathPart('') CaptureArgs(1) {
-    my ( $self, $c, $id ) = @_;
-    
-    if ($id =~ /\D/) { # Misuse of URL, ID does not contain only digits.
-	$c->detach('/not_found', []);
-    } else {
-	my $status = $c->stash->{statuses}->find({ pk => int($id), key => 'primary' });
-	if (not defined $status) { # Could not find a status with ID.
-	    $c->stash->{error_msg} = "Status not found.";
-	    $c->detach('/not_found', []);
-	} else {
-	    $c->stash->{status} = $status;
-	}
-    }
-}
-
-sub list : Chained('base') PathPart('list') Args(0) {
-    my ( $self, $c ) = @_;
-    
-    my $statuses = $c->stash->{statuses}->search(
-	{},
-	{
-	    columns  => [qw/pk name description/],
-	    order_by => 'name',
-	}
-    );
-    $c->stash(statuses => $statuses);
-}
-
 sub add : Chained('base') PathPart('add') Args(0) {
     my ( $self, $c ) = @_;
     
@@ -86,7 +64,7 @@ sub add : Chained('base') PathPart('add') Args(0) {
 sub remove : Chained('object') PathPart('remove') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $status = $c->stash->{status};
+    my $status = $c->stash->{entry};
     $status->delete;
     $c->res->redirect( $c->req->referer() );
 }
@@ -117,9 +95,10 @@ sub save : Private {
     my ($self, $c) = @_;
     
     my $params = $c->req->params;
-    if ($c->stash->{status}) {
+    if ($c->stash->{entry}) {
 	# Update the status
-	$c->stash->{status}->update({
+	my $status = $c->stash->{entry};
+	$status->update({
 	    name => $params->{status_name},
 	    description => $params->{status_description},
 	});
@@ -136,11 +115,17 @@ sub save : Private {
 sub form : Private {
     my ( $self, $c ) = @_;
     
-    if ($c->stash->{status}) {
+    if ($c->stash->{entry}) {
 	$c->stash( template => 'statuses/edit.tt' );
     } else {
 	$c->stash( template => 'statuses/add.tt' );
     }
+}
+
+sub end : Private {
+    my ( $self, $c ) = @_;
+
+    $c->forward($c->view('Web'));
 }
 
 =encoding utf8

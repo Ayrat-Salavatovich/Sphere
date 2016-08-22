@@ -2,7 +2,14 @@ package Sphere::Controller::Posts;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller'; }
+BEGIN { extends 'Sphere::Controller::ModelBase'; }
+
+__PACKAGE__->config(model_name => 'SphereAppDB::Post',
+		    model_search_attrs => {
+			columns  => [qw/pk name description status_fk/],
+		        order_by => 'name',
+		    },
+);
 
 use Sphere::Form::Post;
 
@@ -36,35 +43,6 @@ sub base : Chained('/') PathPart('posts') CaptureArgs(0) {
     $c->stash( statuses => $c->model('SphereAppDB::Status') );
 }
 
-sub object : Chained('base') PathPart('') CaptureArgs(1) {
-    my ( $self, $c, $id ) = @_;
-    
-    if ($id =~ /\D/) { # Misuse of URL, ID does not contain only digits.
-	$c->detach('/not_found', []);
-    } else {
-	my $post = $c->stash->{posts}->find({ pk => int($id), key => 'primary' });
-	if (not defined $post) { # Could not find a post with ID.
-	    $c->stash->{error_msg} = "Post not found.";
-	    $c->detach('/not_found', []);
-	} else {
-	    $c->stash->{post} = $post;
-	}
-    }
-}
-
-sub list : Chained('base') PathPart('list') Args(0) {
-    my ( $self, $c ) = @_;
-    
-    my $posts = $c->stash->{posts}->search(
-	{},
-	{
-	    columns  => [qw/pk name description status_fk/],
-	    order_by => 'name',
-	}
-    );
-    $c->stash(posts => $posts);
-}
-
 sub add : Chained('base') PathPart('add') Args(0) {
     my ( $self, $c ) = @_;
     
@@ -87,7 +65,7 @@ sub add : Chained('base') PathPart('add') Args(0) {
 sub remove : Chained('object') PathPart('remove') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $post = $c->stash->{post};
+    my $post = $c->stash->{entry};
     $post->delete;
     $c->res->redirect( $c->req->referer() );
 }
@@ -119,9 +97,10 @@ sub save : Private {
     my $params = $c->req->params;
     my $status = $c->stash->{statuses}->find({ pk => int($params->{post_status}) });
     if ($status) {
-	if ($c->stash->{post}) {
+	if ($c->stash->{entry}) {
 	    # Update the post
-	    $c->stash->{post}->update({
+	    my $post = $c->stash->{entry};
+	    $post->update({
 		name => $params->{post_name},
 		description => $params->{post_description},
 		status => $status,
@@ -143,11 +122,17 @@ sub save : Private {
 sub form : Private {
     my ( $self, $c ) = @_;
     
-    if ($c->stash->{post}) {
+    if ($c->stash->{entry}) {
 	$c->stash( template => 'posts/edit.tt' );
     } else {
 	$c->stash( template => 'posts/add.tt' );
     }
+}
+
+sub end : Private {
+    my ( $self, $c ) = @_;
+
+    $c->forward($c->view('Web'));
 }
 
 =encoding utf8

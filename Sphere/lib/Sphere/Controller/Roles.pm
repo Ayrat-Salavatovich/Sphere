@@ -2,7 +2,14 @@ package Sphere::Controller::Roles;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller'; }
+BEGIN { extends 'Sphere::Controller::ModelBase'; }
+
+__PACKAGE__->config(model_name => 'SphereAppDB::Role',
+		    model_search_attrs => {
+			columns  => [qw/pk name description status_fk/],
+		        order_by => 'name',
+		    },
+);
 
 use Sphere::Form::Role;
 
@@ -36,35 +43,6 @@ sub base : Chained('/') PathPart('roles') CaptureArgs(0) {
     $c->stash( statuses => $c->model('SphereAppDB::Status') );
 }
 
-sub object : Chained('base') PathPart('') CaptureArgs(1) {
-    my ( $self, $c, $id ) = @_;
-    
-    if ($id =~ /\D/) { # Misuse of URL, ID does not contain only digits.
-	$c->detach('/not_found', []);
-    } else {
-	my $role = $c->stash->{roles}->find({ pk => int($id), key => 'primary' });
-	if (not defined $role) { # Could not find a role with ID.
-	    $c->stash->{error_msg} = "Role not found.";
-	    $c->detach('/not_found', []);
-	} else {
-	    $c->stash->{role} = $role;
-	}
-    }
-}
-
-sub list : Chained('base') PathPart('list') Args(0) {
-    my ( $self, $c ) = @_;
-    
-    my $roles = $c->stash->{roles}->search(
-	{},
-	{
-	    columns  => [qw/pk name description status_fk/],
-	    order_by => 'name',
-	}
-    );
-    $c->stash(roles => $roles);
-}
-
 sub add : Chained('base') PathPart('add') Args(0) {
     my ( $self, $c ) = @_;
     
@@ -87,7 +65,7 @@ sub add : Chained('base') PathPart('add') Args(0) {
 sub remove : Chained('object') PathPart('remove') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $role = $c->stash->{role};
+    my $role = $c->stash->{entry};
     $role->delete;
     $c->res->redirect( $c->req->referer() );
 }
@@ -119,9 +97,10 @@ sub save : Private {
     my $params = $c->req->params;
     my $status = $c->stash->{statuses}->find({ pk => int($params->{role_status}) });
     if ($status) {
-	if ($c->stash->{role}) {
+	if ($c->stash->{entry}) {
 	    # Update the role
-	    $c->stash->{role}->update({
+	    my $role = $c->stash->{entry};
+	    $role->update({
 		name => $params->{role_name},
 		description => $params->{role_description},
 		status => $status,
@@ -143,11 +122,17 @@ sub save : Private {
 sub form : Private {
     my ( $self, $c ) = @_;
     
-    if ($c->stash->{role}) {
+    if ($c->stash->{entry}) {
 	$c->stash( template => 'roles/edit.tt' );
     } else {
 	$c->stash( template => 'roles/add.tt' );
     }
+}
+
+sub end : Private {
+    my ( $self, $c ) = @_;
+
+    $c->forward($c->view('Web'));
 }
 
 =encoding utf8

@@ -1,4 +1,5 @@
 [% META title = 'Patient' -%]
+[% patient = entry %]
 
 <h1>Patient</h1>
 

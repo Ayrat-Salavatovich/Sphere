@@ -2,7 +2,14 @@ package Sphere::Controller::Flags;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller'; }
+BEGIN { extends 'Sphere::Controller::ModelBase'; }
+
+__PACKAGE__->config(model_name => 'SphereAppDB::Flag',
+		    model_search_attrs => {
+			columns  => [qw/pk name description status_fk/],
+		        order_by => 'name',
+		    },
+);
 
 use Sphere::Form::Flag;
 
@@ -34,35 +41,6 @@ sub base : Chained('/') PathPart('flags') CaptureArgs(0) {
 
     $c->stash( flags    => $c->model('SphereAppDB::Flag') );
     $c->stash( statuses => $c->model('SphereAppDB::Status') );
-}
-
-sub object : Chained('base') PathPart('') CaptureArgs(1) {
-    my ( $self, $c, $id ) = @_;
-    
-    if ($id =~ /\D/) { # Misuse of URL, ID does not contain only digits.
-	$c->detach('/not_found', []);
-    } else {
-	my $flag = $c->stash->{flags}->find({ pk => int($id), key => 'primary' });
-	if (not defined $flag) { # Could not find a flag with ID.
-	    $c->stash->{error_msg} = "Flag not found.";
-	    $c->detach('/not_found', []);
-	} else {
-	    $c->stash->{flag} = $flag;
-	}
-    }
-}
-
-sub list : Chained('base') PathPart('list') Args(0) {
-    my ( $self, $c ) = @_;
-    
-    my $flags = $c->stash->{flags}->search(
-	{},
-	{
-	    columns  => [qw/pk name description status_fk/],
-	    order_by => 'name',
-	}
-    );
-    $c->stash(flags => $flags);
 }
 
 sub add : Chained('base') PathPart('add') Args(0) {
@@ -148,6 +126,12 @@ sub form : Private {
     } else {
 	$c->stash( template => 'flags/add.tt' );
     }
+}
+
+sub end : Private {
+    my ( $self, $c ) = @_;
+
+    $c->forward($c->view('Web'));
 }
 
 =encoding utf8

@@ -1,4 +1,5 @@
 package Sphere::View::Web;
+
 use Moose;
 use namespace::autoclean;
 

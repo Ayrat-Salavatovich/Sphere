@@ -2,7 +2,14 @@ package Sphere::Controller::Accounts;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller'; }
+BEGIN { extends 'Sphere::Controller::ModelBase'; }
+
+__PACKAGE__->config(model_name => 'SphereAppDB::Account',
+		    model_search_attrs => {
+			columns  => [qw/pk email name role_fk description status_fk/],
+		        order_by => 'name',
+		    },
+);
 
 use Sphere::Form::Account;
 
@@ -37,35 +44,6 @@ sub base : Chained('/') PathPart('accounts') CaptureArgs(0) {
     $c->stash( statuses => $c->model('SphereAppDB::Status') );
 }
 
-sub object : Chained('base') PathPart('') CaptureArgs(1) {
-    my ( $self, $c, $id ) = @_;
-    
-    if ($id =~ /\D/) { # Misuse of URL, ID does not contain only digits.
-	$c->detach('/not_found', []);
-    } else {
-	my $account = $c->stash->{accounts}->find({ pk => int($id), key => 'primary' });
-	if (not defined $account) { # Could not find a account with ID.
-	    $c->stash->{error_msg} = "Account not found.";
-	    $c->detach('/not_found', []);
-	} else {
-	    $c->stash->{account} = $account;
-	}
-    }
-}
-
-sub list : Chained('base') PathPart('list') Args(0) {
-    my ( $self, $c ) = @_;
-    
-    my $accounts = $c->stash->{accounts}->search(
-	{},
-	{
-	    columns  => [qw/pk email name role_fk description status_fk/],
-	    order_by => 'name',
-	}
-    );
-    $c->stash(accounts => $accounts);
-}
-
 sub add : Chained('base') PathPart('add') Args(0) {
     my ( $self, $c ) = @_;
     
@@ -89,7 +67,7 @@ sub add : Chained('base') PathPart('add') Args(0) {
 sub remove : Chained('object') PathPart('remove') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $account = $c->stash->{account};
+    my $account = $c->stash->{entry};
     $account->delete;
     $c->res->redirect( $c->req->referer() );
 }
@@ -122,9 +100,10 @@ sub save : Private {
     my $role = $c->stash->{roles}->find({ pk => int($params->{account_role}) });
     my $status = $c->stash->{statuses}->find({ pk => int($params->{account_status}) });
     if ($role and $status) {
-	if ($c->stash->{account}) {
+	if ($c->stash->{entry}) {
 	    # Update the account
-	    $c->stash->{account}->update({
+	    my $account = $c->stash->{entry};
+	    $account->update({
 		email => $params->{account_email},
 		name => $params->{account_name},
 		role => $role,
@@ -150,11 +129,17 @@ sub save : Private {
 sub form : Private {
     my ( $self, $c ) = @_;
     
-    if ($c->stash->{account}) {
+    if ($c->stash->{entry}) {
 	$c->stash( template => 'accounts/edit.tt' );
     } else {
 	$c->stash( template => 'accounts/add.tt' );
     }
+}
+
+sub end : Private {
+    my ( $self, $c ) = @_;
+
+    $c->forward($c->view('Web'));
 }
 
 =encoding utf8

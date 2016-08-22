@@ -1,4 +1,5 @@
 [% META title = 'Edit a account' -%]
+[% account = entry %]
 
 <h1>Edit a account</h1>
 

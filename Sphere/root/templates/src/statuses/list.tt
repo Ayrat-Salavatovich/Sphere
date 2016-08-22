@@ -1,4 +1,5 @@
 [% META title = 'Statuses' -%]
+[% statuses = entries %]
 
 <h1>List of statuses</h1>
 

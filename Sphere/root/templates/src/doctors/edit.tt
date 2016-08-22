@@ -1,4 +1,5 @@
 [% META title = 'Edit a doctor' -%]
+[% doctor = entry %]
 
 <h1>Edit a doctor</h1>
 

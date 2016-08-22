@@ -1,4 +1,5 @@
 [% META title = 'Posts' -%]
+[% posts = entries %]
 
 <h1>List of posts</h1>
 

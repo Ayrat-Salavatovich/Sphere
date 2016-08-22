@@ -2,7 +2,14 @@ package Sphere::Controller::Patients;
 use Moose;
 use namespace::autoclean;
 
-BEGIN { extends 'Catalyst::Controller'; }
+BEGIN { extends 'Sphere::Controller::ModelBase'; }
+
+__PACKAGE__->config(model_name => 'SphereAppDB::Patient',
+		    model_search_attrs => {
+			columns  => [qw/pk account_fk first_name middle_name last_name card description is_valid_policy_number/],
+		        order_by => [qw/middle_name first_name/],
+		    },
+);
 
 use Sphere::Form::Patient;
 
@@ -36,35 +43,6 @@ sub base : Chained('/') PathPart('patients') CaptureArgs(0) {
     $c->stash( accounts => $c->model('SphereAppDB::Account') );
 }
 
-sub object : Chained('base') PathPart('') CaptureArgs(1) {
-    my ( $self, $c, $id ) = @_;
-    
-    if ($id =~ /\D/) { # Misuse of URL, ID does not contain only digits.
-	$c->detach('/not_found', []);
-    } else {
-	my $patient = $c->stash->{patients}->find({ pk => int($id), key => 'primary' });
-	if (not defined $patient) { # Could not find a patient with ID.
-	    $c->stash->{error_msg} = "Patient not found.";
-	    $c->detach('/not_found', []);
-	} else {
-	    $c->stash->{patient} = $patient;
-	}
-    }
-}
-
-sub list : Chained('base') PathPart('list') Args(0) {
-    my ( $self, $c ) = @_;
-    
-    my $patients = $c->stash->{patients}->search(
-	{},
-	{
-	    columns  => [qw/pk account_fk first_name middle_name last_name card description is_valid_policy_number/],
-	    order_by => [qw/middle_name first_name/],
-	}
-    );
-    $c->stash(patients => $patients);
-}
-
 sub add : Chained('base') PathPart('add') Args(0) {
     my ( $self, $c ) = @_;
     
@@ -85,7 +63,7 @@ sub add : Chained('base') PathPart('add') Args(0) {
 sub remove : Chained('object') PathPart('remove') Args(0) {
     my ( $self, $c ) = @_;
 
-    my $patient = $c->stash->{patient};
+    my $patient = $c->stash->{entry};
     $patient->delete;
     $c->res->redirect( $c->req->referer() );
 }
@@ -117,9 +95,10 @@ sub save : Private {
     my $params = $c->req->params;
     my $account = $c->stash->{accounts}->find({ pk => int($params->{patient_account}) });
     if ($account) {
-	if ($c->stash->{patient}) {
+	if ($c->stash->{entry}) {
 	    # Update the patient
-	    $c->stash->{patient}->update({
+	    my $patient = $c->stash->{entry};
+	    $patient->update({
 		account => $account,
 		first_name => $params->{patient_first_name},
 		middle_name => $params->{patient_middle_name},		
@@ -147,11 +126,17 @@ sub save : Private {
 sub form : Private {
     my ( $self, $c ) = @_;
     
-    if ($c->stash->{patient}) {
+    if ($c->stash->{entry}) {
 	$c->stash( template => 'patients/edit.tt' );
     } else {
 	$c->stash( template => 'patients/add.tt' );
     }
+}
+
+sub end : Private {
+    my ( $self, $c ) = @_;
+
+    $c->forward($c->view('Web'));
 }
 
 =encoding utf8

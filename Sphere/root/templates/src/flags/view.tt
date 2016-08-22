@@ -1,4 +1,5 @@
 [% META title = 'Flag' -%]
+[% flag = entry %]
 
 <h1>Flag</h1>
 
