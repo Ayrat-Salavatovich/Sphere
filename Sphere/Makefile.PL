@@ -28,6 +28,7 @@ requires 'MooseX::NonMoose' => '0.26';
 requires 'HTML::FormHandler' => '0.40066';
 requires 'HTML::FormHandler::Moose' => '0.40066';
 requires 'LWP::UserAgent' => '6.15';
+requires 'Catalyst::Action::REST' => '1.20';
 
 test_requires 'Test::More' => '0.88';
 catalyst;
