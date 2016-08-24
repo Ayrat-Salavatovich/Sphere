@@ -146,7 +146,7 @@ Related object: L<Sphere::Schema::SphereAppDB::Result::Doctor>
 =cut
 
 __PACKAGE__->belongs_to(
-  "doctor_fk",
+  "doctor",
   "Sphere::Schema::SphereAppDB::Result::Doctor",
   { pk => "doctor_fk" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
@@ -161,7 +161,7 @@ Related object: L<Sphere::Schema::SphereAppDB::Result::Post>
 =cut
 
 __PACKAGE__->belongs_to(
-  "post_fk",
+  "post",
   "Sphere::Schema::SphereAppDB::Result::Post",
   { pk => "post_fk" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
@@ -176,7 +176,7 @@ Related object: L<Sphere::Schema::SphereAppDB::Result::Status>
 =cut
 
 __PACKAGE__->belongs_to(
-  "status_fk",
+  "status",
   "Sphere::Schema::SphereAppDB::Result::Status",
   { pk => "status_fk" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },

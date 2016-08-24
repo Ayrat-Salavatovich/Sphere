@@ -1,0 +1,71 @@
+[% META title = 'Quotas' -%]
+[% quotas = entries %]
+
+<h1>List of quotas</h1>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Quotas').action_for('add')) | html %]">Add a new quota...</a></p>
+
+[% IF quotas.count > 0 %]
+  <table width='90%'>
+    <tr>
+      <th style='text-align:left'>ID</th>
+      <th style='text-align:left'>Limit</th>
+      <th style='text-align:left'>Value</th>
+      <th style='text-align:left'>Doctor</th>
+      <th style='text-align:left'>Post</th>
+      <th style='text-align:left'>Year</th>
+      <th style='text-align:left'>Month</th>
+      <th style='text-align:left'>Day</th>
+      <th style='text-align:left'>Description</th>
+      <th style='text-align:left'>Status</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+    [% WHILE (quota = quotas.next) %]
+    <tr>
+      <td>
+        [% quota.pk %]
+      </td>
+      <td>
+        [% quota.quota_limit %]
+      </td>
+      <td>
+        [% quota.quota_value %]
+      </td>
+      <td>
+        [% quota.doctor.middle_name %] [% quota.doctor.first_name %]
+      </td>
+      <td>
+        [% quota.post.name %]
+      </td>
+      <td>
+        [% quota.year %]
+      </td>
+      <td>
+        [% quota.month %]
+      </td>
+      <td>
+        [% quota.day %]
+      </td>
+      <td>
+        [% quota.description %]
+      </td>
+      <td>
+        [% quota.status.name %]
+      </td>
+      <td>
+        <a href="[% Catalyst.uri_for(Catalyst.controller('Quotas').action_for('remove'), [quota.pk]) | html %]">Delete</a>
+      </td>
+      <td>
+        <a href="[% Catalyst.uri_for(Catalyst.controller('Quotas').action_for('edit'), [quota.pk]) | html %]">Edit</a>
+      </td>
+      <td>
+        <a href="[% Catalyst.uri_for(Catalyst.controller('Quotas').action_for('view'), [quota.pk]) | html %]">View</a>
+      </td>
+    </tr>
+    [% END -%]
+  </table>
+[% ELSE %]
+  <p>No quotas yet!</p>
+[% END %]

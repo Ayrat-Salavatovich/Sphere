@@ -1,0 +1,25 @@
+[% META title = 'Edit a quota' -%]
+[% quota = entry %]
+
+<h1>Edit a quota</h1>
+
+<form action="[% Catalyst.uri_for( Catalyst.controller('Quotas').action_for('edit'), [ quota.pk ]) | html %]" method="post">
+      <p><label for="quota_limit">Limit</label><input type="text" name="quota_limit" id="quota_limit" value="[% quota.quota_limit %]"/><br>
+      <label for="quota_doctor">Doctor</label><select name="quota_doctor" id="quota_doctor">
+      [% WHILE (doctor = doctors.next) %]
+      	 <option value="[% doctor.pk %]" [%- IF quota.doctor.pk == doctor.pk %] selected="selected" [% END %]>[% doctor.middle_name %] [% doctor.first_name %] ([% doctor.post.name %])</option>
+      [% END %]
+      </select><br>
+      <label for="quota_year">Year</label><input type="text" name="quota_year" id="quota_year" value="[% quota.year %]"/><br>
+      <label for="quota_month">Month</label><input type="text" name="quota_month" id="quota_month" value="[% quota.month %]"/><br>
+      <label for="quota_day">Day</label><input type="text" name="quota_day" id="quota_day" value="[% quota.day %]"/><br>
+      <label for="quota_description">Description<label><input type="text" name="quota_description" id="quota_description" value="[% quota.description %]"/><br>
+      <label for="quota_status">Status</label><select name="quota_status" id="quota_status">
+      [% WHILE (status = statuses.next) %]
+      	 <option value="[% status.pk %]" [%- IF quota.status.pk == status.pk %] selected="selected" [% END %]>[% status.name %]</option>
+      [% END %]
+      </select><br>
+      <input type="submit" value="Edit" /></p>
+</form>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Quotas').action_for('list')) | html %]">Quotas...</a></p>
