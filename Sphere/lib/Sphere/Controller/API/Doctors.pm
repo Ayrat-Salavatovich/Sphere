@@ -8,7 +8,7 @@ BEGIN { extends 'Sphere::Controller::API'; }
 __PACKAGE__->config(
     result => 'SphereAppDB::Doctor',
 );
-with 'Sphere::Controller::AutoBase';
+with 'Sphere::Controller::API::AutoBase';
 
 =head1 NAME
 

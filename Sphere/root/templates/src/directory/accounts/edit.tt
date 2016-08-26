@@ -1,0 +1,23 @@
+[% META title = 'Edit a account' -%]
+[% account = entry %]
+
+<h1>Edit a account</h1>
+
+<form action="[% Catalyst.uri_for( Catalyst.controller('Directory::Accounts').action_for('edit'), [ account.pk ]) | html %]" method="post">
+      <p><label for="account_email">Name</label><input type="text" name="account_email" id="account_email" value="[% account.email %]"/><br>
+      <label for="account_name">Name</label><input type="text" name="account_name" id="account_name" value="[% account.name %]"/><br>
+      <label for="account_role">Role</label><select name="account_role" id="account_role">
+      [% WHILE (role = roles.next) %]
+      	 <option value="[% role.pk %]" [%- IF account.role.pk == role.pk %] selected="selected" [% END %]>[% role.name %]</option>
+      [% END %]
+      </select><br>
+      <label for="account_description">Description<label><input type="text" name="account_description" id="account_description" value="[% account.description %]"/><br>
+      <label for="account_status">Status</label><select name="account_status" id="account_status">
+      [% WHILE (status = statuses.next) %]
+      	 <option value="[% status.pk %]" [%- IF account.status.pk == status.pk %] selected="selected" [% END %]>[% status.name %]</option>
+      [% END %]
+      </select><br>
+      <input type="submit" value="Edit" /></p>
+</form>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Accounts').action_for('list')) | html %]">Accounts...</a></p>

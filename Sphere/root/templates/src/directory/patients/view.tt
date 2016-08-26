@@ -1,0 +1,18 @@
+[% META title = 'Patient' -%]
+[% patient = entry %]
+
+<h1>Patient</h1>
+
+<p>
+<label>ID:</label> [% patient.pk %]<br>
+<label>Account:</label> [% patient.account.name %] ([% patient.account.email %])<br>
+<label>First name:</label> [% patient.first_name %]<br>
+<label>Middle name:</label> [% patient.middle_name %]<br>
+<label>Last name:</label> [% patient.last_name %]<br>
+<label>Card:</label> [% patient.card %]<br>
+<label>Description:</label> [% patient.description %]<br>
+<label>Valid policy:</label> [% patient.is_valid_policy_number %]<br>
+</p>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Patients').action_for('edit'), [patient.pk]) | html %]">Edit</a><br>
+<a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Patients').action_for('list')) | html %]">Patients...</a></p>

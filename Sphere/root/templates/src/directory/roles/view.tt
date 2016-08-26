@@ -1,0 +1,14 @@
+[% META title = 'Role' -%]
+[% role = entry %]
+
+<h1>Role</h1>
+
+<p>
+<label>ID:</label> [% role.pk %]<br>
+<label>Name:</label> [% role.name %]<br>
+<label>Description:</label> [% role.description %]<br>
+<label>Status:</label> [% role.status.name %]<br>
+</p>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Roles').action_for('edit'), [role.pk]) | html %]">Edit</a><br>
+<a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Roles').action_for('list')) | html %]">Roles...</a></p>

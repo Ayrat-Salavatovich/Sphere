@@ -45,25 +45,10 @@ __PACKAGE__->table("schedules");
   is_nullable: 0
   sequence: 'schedules_pk_seq'
 
-=head2 doctor_fk
+=head2 quota_fk
 
   data_type: 'integer'
   is_foreign_key: 1
-  is_nullable: 0
-
-=head2 year
-
-  data_type: 'integer'
-  is_nullable: 0
-
-=head2 month
-
-  data_type: 'integer'
-  is_nullable: 0
-
-=head2 day
-
-  data_type: 'integer'
   is_nullable: 0
 
 =head2 hour
@@ -103,14 +88,8 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "schedules_pk_seq",
   },
-  "doctor_fk",
+  "quota_fk",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "year",
-  { data_type => "integer", is_nullable => 0 },
-  "month",
-  { data_type => "integer", is_nullable => 0 },
-  "day",
-  { data_type => "integer", is_nullable => 0 },
   "hour",
   { data_type => "integer", is_nullable => 0 },
   "minute",
@@ -137,18 +116,18 @@ __PACKAGE__->set_primary_key("pk");
 
 =head1 RELATIONS
 
-=head2 doctor_fk
+=head2 quota_fk
 
 Type: belongs_to
 
-Related object: L<Sphere::Schema::SphereAppDB::Result::Doctor>
+Related object: L<Sphere::Schema::SphereAppDB::Result::Quota>
 
 =cut
 
 __PACKAGE__->belongs_to(
-  "doctor_fk",
-  "Sphere::Schema::SphereAppDB::Result::Doctor",
-  { pk => "doctor_fk" },
+  "quota",
+  "Sphere::Schema::SphereAppDB::Result::Quota",
+  { pk => "quota_fk" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
@@ -161,7 +140,7 @@ Related object: L<Sphere::Schema::SphereAppDB::Result::Flag>
 =cut
 
 __PACKAGE__->belongs_to(
-  "flag_fk",
+  "flag",
   "Sphere::Schema::SphereAppDB::Result::Flag",
   { pk => "flag_fk" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
@@ -176,7 +155,7 @@ Related object: L<Sphere::Schema::SphereAppDB::Result::Patient>
 =cut
 
 __PACKAGE__->belongs_to(
-  "patient_fk",
+  "patient",
   "Sphere::Schema::SphereAppDB::Result::Patient",
   { pk => "patient_fk" },
   {

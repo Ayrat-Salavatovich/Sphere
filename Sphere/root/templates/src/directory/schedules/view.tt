@@ -1,0 +1,21 @@
+[% META title = 'Schedule' -%]
+[% schedule = entry %]
+
+<h1>Schedule</h1>
+
+<p>
+<label>ID:</label> [% schedule.pk %]<br>  
+<label>Doctor:</label> [% schedule.quota.doctor.middle_name %] [% schedule.quota.doctor.first_name %]<br>
+<label>Post:</label> [% schedule.quota.doctor.post.name %]<br>
+<label>Year:</label> [% schedule.quota.year %]<br>
+<label>Month:</label> [% schedule.quota.month %]<br>
+<label>Day:</label> [% schedule.quota.day %]<br>
+<label>Hour:</label> [% schedule.hour %]<br>
+<label>Minute:</label> [% schedule.minute %]<br>
+<label>Patient:</label> [% schedule.patient.middle_name %] [% schedule.patient.first_name %]<br>
+<label>Description:</label> [% schedule.description %]<br>
+<label>Flag:</label> [% schedule.flag.name %]<br>
+</p>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Schedules').action_for('edit'), [ schedule.quota.pk, schedule.pk ]) | html %]">Edit</a><br>
+<a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Schedules').action_for('list'), [ schedule.quota.pk ]) | html %]">Schedules...</a></p>

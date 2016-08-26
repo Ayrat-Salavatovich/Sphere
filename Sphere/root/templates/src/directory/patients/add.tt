@@ -1,0 +1,20 @@
+[% META title = 'Add a patient' -%]
+
+<h1>Add a patient</h1>
+
+<form action="[% Catalyst.uri_for(Catalyst.controller('Directory::Patients').action_for('add')) | html %]" method="post">
+      <p><label for="patient_account">Account</label><select name="patient_account" id="patient_account">
+      [% WHILE (account = accounts.next) %]
+      	 <option value="[% account.pk %]">[% account.name %] ([% patient.account.email %])</option>
+      [% END %]
+      </select><br>
+      <label for="patient_first_name">First name</label><input type="text" name="patient_first_name" id="patient_first_name" /><br>
+      <label for="patient_middle_name">Middle name</label><input type="text" name="patient_middle_name" id="patient_middle_name" /><br>
+      <label for="patient_last_name">Last name</label><input type="text" name="patient_last_name" id="patient_last_name" /><br>
+      <label for="patient_card">Card</label><input type="text" name="patient_card" id="patient_card" /><br>
+      <label for="patient_description">Description<label><input type="text" name="patient_description" id="patient_description" /><br>
+      </select><br>
+      <input type="submit" value="Create" /></p>
+</form>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Patients').action_for('list')) | html %]">Patients...</a></p>

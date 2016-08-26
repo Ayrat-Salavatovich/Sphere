@@ -1,0 +1,12 @@
+[% META title = 'Edit a status' -%]
+[% status = entry %]
+
+<h1>Edit a status</h1>
+
+<form action="[% Catalyst.uri_for( Catalyst.controller('Directory::Statuses').action_for('edit'), [ status.pk ]) | html %]" method="post">
+      <p><label for="status_name">Name</label><input type="text" name="status_name" id="status_name" value="[% status.name %]"/><br>
+      <label for="status_description">Description<label><input type="text" name="status_description" id="status_description" value="[% status.description %]"/><br>
+      <input type="submit" value="Edit" /></p>
+</form>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Statuses').action_for('list')) | html %]">Statuses...</a></p>

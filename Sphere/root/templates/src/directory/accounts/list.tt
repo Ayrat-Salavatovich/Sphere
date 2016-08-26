@@ -1,0 +1,55 @@
+[% META title = 'Accounts' -%]
+[% accounts = entries %]
+
+<h1>List of accounts</h1>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Accounts').action_for('add')) | html %]">Add a new account...</a></p>
+
+[% IF accounts.count > 0 %]
+  <table width='90%'>
+    <tr>
+      <th style='text-align:left'>ID</th>
+      <th style='text-align:left'>Email</th>
+      <th style='text-align:left'>Name</th>
+      <th style='text-align:left'>Role</th>
+      <th style='text-align:left'>Description</th>
+      <th style='text-align:left'>Status</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+    [% WHILE (account = accounts.next) %]
+    <tr>
+      <td>
+        [% account.pk %]
+      </td>
+      <td>
+        [% account.email %]
+      </td>
+      <td>
+        [% account.name %]
+      </td>
+      <td>
+        [% account.role.name %]
+      </td>
+      <td>
+        [% account.description %]
+      </td>
+      <td>
+        [% account.status.name %]
+      </td>
+      <td>
+        <a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Accounts').action_for('remove'), [account.pk]) | html %]">Delete</a>
+      </td>
+      <td>
+        <a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Accounts').action_for('edit'), [account.pk]) | html %]">Edit</a>
+      </td>
+      <td>
+        <a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Accounts').action_for('view'), [account.pk]) | html %]">View</a>
+      </td>
+    </tr>
+    [% END -%]
+  </table>
+[% ELSE %]
+  <p>No accounts yet!</p>
+[% END %]

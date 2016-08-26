@@ -1,0 +1,16 @@
+[% META title = 'Add a role' -%]
+
+<h1>Add a role</h1>
+
+<form action="[% Catalyst.uri_for(Catalyst.controller('Directory::Roles').action_for('add')) | html %]" method="post">
+      <p><label for="role_name">Name</label><input type="text" name="role_name" id="role_name" /><br>
+      <label for="role_description">Description<label><input type="text" name="role_description" id="role_description" /><br>
+      <label for="role_status">Status</label><select name="role_status" id="role_status">
+      [% WHILE (status = statuses.next) %]
+      	 <option value="[% status.pk %]">[% status.name %]</option>
+      [% END %]
+      </select><br>
+      <input type="submit" value="Create" /></p>
+</form>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Roles').action_for('list')) | html %]">Roles...</a></p>

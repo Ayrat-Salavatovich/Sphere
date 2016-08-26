@@ -1,0 +1,77 @@
+[% META title = 'Schedules' -%]
+[% schedules = entries %]
+
+<h1>List of schedules</h1>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Schedules').action_for('add'), [ quota.pk ]) | html %]">Add a new schedule...</a></p>
+
+[% IF schedules.count > 0 %]
+  <table width='90%'>
+    <tr>
+      <th style='text-align:left'>ID</th>
+      <th style='text-align:left'>Doctor</th>
+      <th style='text-align:left'>Post</th>
+      <th style='text-align:left'>Year</th>
+      <th style='text-align:left'>Month</th>
+      <th style='text-align:left'>Day</th>
+      <th style='text-align:left'>Hour</th>
+      <th style='text-align:left'>Minute</th>
+      <th style='text-align:left'>Patient</th>
+      <th style='text-align:left'>Description</th>
+      <th style='text-align:left'>Flag</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+    [% WHILE (schedule = schedules.next) %]
+    <tr>
+      <td>
+        [% schedule.pk %]
+      </td>
+      <td>
+        [% schedule.quota.doctor.middle_name %] [% schedule.quota.doctor.first_name %]
+      </td>
+      <td>
+        [% schedule.quota.doctor.post.name %]
+      </td>
+      <td>
+        [% schedule.quota.year %]
+      </td>
+      <td>
+        [% schedule.quota.month %]
+      </td>
+      <td>
+        [% schedule.quota.day %]
+      </td>
+      <td>
+        [% schedule.hour %]
+      </td>
+      <td>
+        [% schedule.minute %]
+      </td>
+      <td>
+      [% IF schedule.patient %]
+        [% schedule.patient.middle_name %] [% schedule.patient.first_name %]
+      [% END %]
+      </td>
+      <td>
+        [% schedule.description %]
+      </td>
+      <td>
+        [% schedule.flag.name %]
+      </td>
+      <td>
+        <a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Schedules').action_for('remove'), [ schedule.quota.pk, schedule.pk ]) | html %]">Delete</a>
+      </td>
+      <td>
+        <a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Schedules').action_for('edit'), [ schedule.quota.pk, schedule.pk ]) | html %]">Edit</a>
+      </td>
+      <td>
+        <a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Schedules').action_for('view'), [ schedule.quota.pk, schedule.pk ]) | html %]">View</a>
+      </td>
+    </tr>
+    [% END -%]
+  </table>
+[% ELSE %]
+  <p>No schedules yet!</p>
+[% END %]

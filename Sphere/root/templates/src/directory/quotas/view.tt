@@ -1,0 +1,20 @@
+[% META title = 'Quota' -%]
+[% quota = entry %]
+
+<h1>Quota</h1>
+
+<p>
+<label>ID:</label> [% quota.pk %]<br>  
+<label>Limit:</label> [% quota.quota_limit %]<br>
+<label>Value:</label> [% quota.quota_value %]<br>
+<label>Doctor:</label> [% quota.doctor.middle_name %] [% quota.doctor.first_name %]<br>
+<label>Post:</label> [% quota.doctor.post.name %]<br>
+<label>Year:</label> [% quota.year %]<br>
+<label>Month:</label> [% quota.month %]<br>
+<label>Day:</label> [% quota.day %]<br>
+<label>Description:</label> [% quota.description %]<br>
+<label>Status:</label> [% quota.status.name %]<br>
+</p>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Quotas').action_for('edit'), [quota.pk]) | html %]">Edit</a><br>
+<a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Quotas').action_for('list')) | html %]">Quotas...</a></p>

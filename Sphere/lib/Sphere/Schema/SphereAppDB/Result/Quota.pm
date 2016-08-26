@@ -61,12 +61,6 @@ __PACKAGE__->table("quotas");
   is_foreign_key: 1
   is_nullable: 0
 
-=head2 post_fk
-
-  data_type: 'integer'
-  is_foreign_key: 1
-  is_nullable: 0
-
 =head2 description
 
   data_type: 'text'
@@ -109,8 +103,6 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_nullable => 0 },
   "doctor_fk",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "post_fk",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "description",
   { data_type => "text", is_nullable => 1 },
   "year",
@@ -149,21 +141,6 @@ __PACKAGE__->belongs_to(
   "doctor",
   "Sphere::Schema::SphereAppDB::Result::Doctor",
   { pk => "doctor_fk" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
-);
-
-=head2 post_fk
-
-Type: belongs_to
-
-Related object: L<Sphere::Schema::SphereAppDB::Result::Post>
-
-=cut
-
-__PACKAGE__->belongs_to(
-  "post",
-  "Sphere::Schema::SphereAppDB::Result::Post",
-  { pk => "post_fk" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 

@@ -1,0 +1,17 @@
+[% META title = 'Add a schedule' -%]
+
+<h1>Add a schedule</h1>
+
+<form action="[% Catalyst.uri_for( Catalyst.controller('Directory::Schedules').action_for('add'), [ quota.pk ]) | html %]" method="post">
+      <p><label for="schedule_hour">Hour</label><input type="text" name="schedule_hour" id="schedule_hour" /><br>
+      <label for="schedule_minute">Minute</label><input type="text" name="schedule_minute" id="schedule_minute" /><br>
+      <label for="schedule_description">Description<label><input type="text" name="schedule_description" id="schedule_description" /><br>
+      <label for="schedule_flag">Flag</label><select name="schedule_flag" id="schedule_flag">
+      [% WHILE (flag = flags.next) %]
+      	 <option value="[% flag.pk %]">[% flag.name %]</option>
+      [% END %]
+      </select><br>
+      <input type="submit" value="Create" /></p>
+</form>
+
+<p><a href="[% Catalyst.uri_for(Catalyst.controller('Directory::Schedules').action_for('list'), [ quota.pk ]) | html %]">Schedules...</a></p>
