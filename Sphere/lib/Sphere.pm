@@ -20,6 +20,9 @@ use Catalyst qw/
     -Debug
     ConfigLoader
     Static::Simple
+    Session
+    Session::State::Cookie
+    Session::Store::DBIC
 /;
 
 extends 'Catalyst';
@@ -50,6 +53,18 @@ __PACKAGE__->config(
 	    __PACKAGE__->path_to( 'root', 'templates', 'lib' ),
             __PACKAGE__->path_to( 'root', 'templates', 'src' ),
 	],
+    },
+);
+
+# Configure DB sessions
+__PACKAGE__->config(
+    'Plugin::Session' => {
+	dbic_class     => 'SphereAppDB::Session',
+	flash_to_stash => 1, # Stick the flash in the stash
+	id_field       => 'pk',
+	data_field     => 'data',
+	expires        => 3600 * 24 * 7, # 1 week
+	cookie_expires => 3600 * 24 * 7, # 1 week
     },
 );
 

@@ -32,6 +32,7 @@ requires 'LWP::UserAgent' => '6.15';
 requires 'Catalyst::Action::REST' => '1.20';
 requires 'Catalyst::Plugin::Session' => '0.40';
 requires 'Catalyst::Plugin::Session::State::Cookie' => '0.17';
+requires 'Catalyst::Plugin::Session::Store::DBIC' => '0.14';
 
 test_requires 'Test::More' => '0.88';
 catalyst;
