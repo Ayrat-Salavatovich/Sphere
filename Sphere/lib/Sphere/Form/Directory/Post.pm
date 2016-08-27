@@ -1,4 +1,4 @@
-package Sphere::Form::Post;
+package Sphere::Form::Directory::Post;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';

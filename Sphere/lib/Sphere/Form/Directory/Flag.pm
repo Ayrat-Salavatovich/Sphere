@@ -1,4 +1,4 @@
-package Sphere::Form::Flag;
+package Sphere::Form::Directory::Flag;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';

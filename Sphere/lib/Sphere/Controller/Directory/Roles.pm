@@ -11,7 +11,7 @@ __PACKAGE__->config(model_name => 'SphereAppDB::Role',
 		    },
 );
 
-use Sphere::Form::Role;
+use Sphere::Form::Directory::Role;
 
 =head1 NAME
 
@@ -48,7 +48,7 @@ sub add : Chained('base') PathPart('add') Args(0) {
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	my $form = Sphere::Form::Role->new;
+	my $form = Sphere::Form::Directory::Role->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";
@@ -75,7 +75,7 @@ sub edit : Chained('object') PathPart('edit') Args(0) {
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	my $form = Sphere::Form::Role->new;
+	my $form = Sphere::Form::Directory::Role->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";

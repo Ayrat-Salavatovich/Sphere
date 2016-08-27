@@ -1,4 +1,4 @@
-package Sphere::Form::Schedule;
+package Sphere::Form::Directory::Schedule;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';

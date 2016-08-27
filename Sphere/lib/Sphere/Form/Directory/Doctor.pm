@@ -1,4 +1,4 @@
-package Sphere::Form::Doctor;
+package Sphere::Form::Directory::Doctor;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';

@@ -12,7 +12,7 @@ __PACKAGE__->config(model_name => 'SphereAppDB::Account',
 		    },
 );
 
-use Sphere::Form::Account;
+use Sphere::Form::Directory::Account;
 
 =head1 NAME
 
@@ -50,7 +50,7 @@ sub add : Chained('base') PathPart('add') Args(0) {
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	my $form = Sphere::Form::Account->new;
+	my $form = Sphere::Form::Directory::Account->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";
@@ -78,7 +78,7 @@ sub edit : Chained('object') PathPart('edit') Args(0) {
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	my $form = Sphere::Form::Account->new;
+	my $form = Sphere::Form::Directory::Account->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";

@@ -1,4 +1,4 @@
-package Sphere::Form::Status;
+package Sphere::Form::Directory::Status;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';

@@ -11,7 +11,7 @@ __PACKAGE__->config(model_name => 'SphereAppDB::Status',
 		    },
 );
 
-use Sphere::Form::Status;
+use Sphere::Form::Directory::Status;
 
 =head1 NAME
 
@@ -40,7 +40,7 @@ sub add : Chained('base') PathPart('add') Args(0) {
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	my $form = Sphere::Form::Status->new;
+	my $form = Sphere::Form::Directory::Status->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "No name.";
@@ -68,7 +68,7 @@ sub edit : Chained('object') PathPart('edit') Args(0) {
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
 	my $status = $c->stash->{status};
-	my $form = Sphere::Form::Status->new;
+	my $form = Sphere::Form::Directory::Status->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "No name.";

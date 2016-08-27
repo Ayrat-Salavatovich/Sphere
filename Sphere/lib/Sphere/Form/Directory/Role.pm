@@ -1,4 +1,4 @@
-package Sphere::Form::Role;
+package Sphere::Form::Directory::Role;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';

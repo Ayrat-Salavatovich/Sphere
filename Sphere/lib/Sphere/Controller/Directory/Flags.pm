@@ -12,7 +12,7 @@ __PACKAGE__->config(model_name => 'SphereAppDB::Flag',
 		    },
 );
 
-use Sphere::Form::Flag;
+use Sphere::Form::Directory::Flag;
 
 =head1 NAME
 
@@ -49,7 +49,7 @@ sub add : Chained('base') PathPart('add') Args(0) {
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	my $form = Sphere::Form::Flag->new;
+	my $form = Sphere::Form::Directory::Flag->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";
@@ -76,7 +76,7 @@ sub edit : Chained('object') PathPart('edit') Args(0) {
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	my $form = Sphere::Form::Flag->new;
+	my $form = Sphere::Form::Directory::Flag->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";

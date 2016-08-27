@@ -1,4 +1,4 @@
-package Sphere::Form::Account;
+package Sphere::Form::Directory::Account;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';

@@ -1,4 +1,4 @@
-package Sphere::Form::Quota;
+package Sphere::Form::Directory::Quota;
 
 use HTML::FormHandler::Moose;
 extends 'HTML::FormHandler';

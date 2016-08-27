@@ -13,7 +13,7 @@ __PACKAGE__->config(model_name => 'SphereAppDB::Quota',
                     },
 );
 
-use Sphere::Form::Quota;
+use Sphere::Form::Directory::Quota;
 
 =head1 NAME
 
@@ -60,7 +60,7 @@ sub add : Chained('base') PathPart('add') Args(0) {
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	my $form = Sphere::Form::Quota->new;
+	my $form = Sphere::Form::Directory::Quota->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";
@@ -85,7 +85,7 @@ sub edit : Chained('object') PathPart('edit') Args(0) {
     
     if (lc $c->req->method eq 'post') {
 	my $params = $c->req->params;
-	my $form = Sphere::Form::Quota->new;
+	my $form = Sphere::Form::Directory::Quota->new;
 	my $result = $form->run( params => $params );
 	if ($result->has_errors) {
 	    $c->stash->{error_msg} = "Parameters is incorrect.";
