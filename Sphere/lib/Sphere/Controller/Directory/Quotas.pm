@@ -150,12 +150,6 @@ sub form : Private {
     }
 }
 
-sub end : Private {
-    my ( $self, $c ) = @_;
-
-    $c->forward($c->view('Web'));
-}
-
 =encoding utf8
 
 =head1 AUTHOR

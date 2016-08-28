@@ -20,6 +20,7 @@ use Catalyst qw/
     -Debug
     ConfigLoader
     Static::Simple
+    Authentication
     Session
     Session::State::Cookie
     Session::Store::DBIC
@@ -44,6 +45,7 @@ __PACKAGE__->config(
     disable_component_resolution_regex_fallback => 1,
     enable_catalyst_header => 1, # Send X-Catalyst header
     using_frontend_proxy => 1, # Set the right headers for nginx
+    default_view => 'Web',
 );
 
 # Set the location for TT files
@@ -66,6 +68,26 @@ __PACKAGE__->config(
 	expires        => 3600 * 24 * 7, # 1 week
 	cookie_expires => 3600 * 24 * 7, # 1 week
     },
+);
+
+__PACKAGE__->config(
+    'Plugin::Authentication' => {
+	default => {
+	    credential => {
+		class         => 'OAuth2',
+        	grant_uri     => 'https://accounts.google.com/o/oauth2/auth',
+		token_uri     => 'https://accounts.google.com/o/oauth2/token',
+		client_id     => 'client_id',
+		client_secret => 'client_secret',
+		scopes        => [
+		    'https://www.googleapis.com/auth/userinfo.email',
+		],
+	    },
+	    store => {
+		class => 'Null'
+	    },
+	}
+    }
 );
 
 # Start the application

@@ -26,13 +26,16 @@ requires 'DBIx::Class' => '0.082840';
 requires 'Catalyst::Model::DBIC::Schema' => '0.65';
 requires 'DBIx::Class::Schema::Loader' => '0.07045';
 requires 'MooseX::NonMoose' => '0.26';
+requires 'MooseX::ClassAttribute' => '0.29';
 requires 'HTML::FormHandler' => '0.40066';
 requires 'HTML::FormHandler::Moose' => '0.40066';
-requires 'LWP::UserAgent' => '6.15';
+requires 'Furl' => '3.09';
 requires 'Catalyst::Action::REST' => '1.20';
 requires 'Catalyst::Plugin::Session' => '0.40';
 requires 'Catalyst::Plugin::Session::State::Cookie' => '0.17';
 requires 'Catalyst::Plugin::Session::Store::DBIC' => '0.14';
+requires 'Google::OAuth2::Client::Simple' => '0.004';
+requires 'Google::API::OAuth2::Client' => '0.14';
 
 test_requires 'Test::More' => '0.88';
 catalyst;
